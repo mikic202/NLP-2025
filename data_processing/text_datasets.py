@@ -53,3 +53,24 @@ def get_poem_sentiment_dataset(tokenizer, path=None):
         ),
         SimpleSentimentDataset(test_data["verse_text"], test_data["label"], tokenizer),
     )
+
+
+def get_basic_tweet_sentiment_dataset(tokenizer, path=None):
+    if path:
+        raw_dataset = load_dataset(path)
+    else:
+        raw_dataset = load_dataset("stanfordnlp/sentiment140")
+    train_data, test_data = (
+        raw_dataset["train"],
+        raw_dataset["test"],
+    )
+    return (
+        SimpleSentimentDataset(train_data["text"], train_data["sentiment"], tokenizer),
+        SimpleSentimentDataset(test_data["text"], test_data["sentiment"], tokenizer),
+    )
+
+
+if __name__ == "__main__":
+    train_data, test_data = get_basic_tweet_sentiment_dataset(None)
+    print(len(train_data))
+    print(len(test_data))
