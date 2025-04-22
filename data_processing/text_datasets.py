@@ -1,5 +1,6 @@
 from torch.utils.data import Dataset
 import torch
+from datasets import load_dataset
 
 
 class SimpleSentimentDataset(Dataset):
@@ -31,3 +32,24 @@ class AdditionalDataSentimentDataset(Dataset):
         data = self.data.iloc[idx]
         data[self.text_id] = torch.tensor(self.tokenizer(data[self.text_id]))
         return data, torch.tensor(self.sentiment[idx])
+
+
+def get_poem_sentiment_dataset(tokenizer, path=None):
+    if path:
+        raw_dataset = load_dataset(path)
+    else:
+        raw_dataset = load_dataset("google-research-datasets/poem_sentiment")
+    train_data, validation_data, test_data = (
+        raw_dataset["train"],
+        raw_dataset["validation"],
+        raw_dataset["test"],
+    )
+    return (
+        SimpleSentimentDataset(
+            train_data["verse_text"], train_data["label"], tokenizer
+        ),
+        SimpleSentimentDataset(
+            validation_data["verse_text"], validation_data["label"], tokenizer
+        ),
+        SimpleSentimentDataset(test_data["verse_text"], test_data["label"], tokenizer),
+    )
