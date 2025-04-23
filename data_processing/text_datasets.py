@@ -3,6 +3,8 @@ import torch
 from datasets import load_dataset
 import kagglehub
 import pandas as pd
+from sklearn.preprocessing import LabelEncoder
+from preprocessing import preprocess_advanced_tweet_sentiment_data
 
 
 class SimpleSentimentDataset(Dataset):
@@ -75,28 +77,37 @@ def get_basic_tweet_sentiment_dataset(tokenizer, path=None):
 def get_advanced_tweet_sentiment_dataset(tokenizer, path=None):
     if not path:
         path = kagglehub.dataset_download("abhi8923shriv/sentiment-analysis-dataset")
-    train_data = pd.read_csv(
-        path + "/train.csv", encoding="ISO-8859-1", engine="python"
+    train_data, means, stds = preprocess_advanced_tweet_sentiment_data(
+        pd.read_csv(path + "/train.csv", encoding="ISO-8859-1", engine="python")
     )
-    test_data = pd.read_csv(path + "/test.csv", encoding="ISO-8859-1", engine="python")
+    test_data, _, _ = preprocess_advanced_tweet_sentiment_data(
+        pd.read_csv(path + "/test.csv", encoding="ISO-8859-1", engine="python"),
+        means,
+        stds,
+    )
     return (
         AdditionalDataSentimentDataset(
-            train_data.drop("sentiment"),
+            train_data.drop(["sentiment", "selected_text", "textID"], axis=1),
             train_data["sentiment"],
             tokenizer,
             text_id="text",
         ),
         AdditionalDataSentimentDataset(
-            test_data.drop("sentiment"),
+            test_data.drop(["sentiment", "textID"], axis=1),
             test_data["sentiment"],
             tokenizer,
             text_id="text",
         ),
+        means,
+        stds,
     )
 
 
 if __name__ == "__main__":
-    train_dataset, test_dataset = get_advanced_tweet_sentiment_dataset(lambda x: len(x))
+    train_dataset, test_dataset, means, stds = get_advanced_tweet_sentiment_dataset(
+        lambda x: len(x)
+    )
     print(len(train_dataset))
     print(len(test_dataset))
-    print(train_dataset[0])
+    print("____________________________")
+    print(test_dataset[23])
