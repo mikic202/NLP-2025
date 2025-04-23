@@ -43,6 +43,7 @@ def get_poem_sentiment_dataset(tokenizer, path=None):
         raw_dataset = load_dataset(path)
     else:
         raw_dataset = load_dataset("google-research-datasets/poem_sentiment")
+    label_encoder = LabelEncoder()
     train_data, validation_data, test_data = (
         raw_dataset["train"],
         raw_dataset["validation"],
@@ -50,12 +51,20 @@ def get_poem_sentiment_dataset(tokenizer, path=None):
     )
     return (
         SimpleSentimentDataset(
-            train_data["verse_text"], train_data["label"], tokenizer
+            train_data["verse_text"],
+            label_encoder.fit_transform(train_data["label"]),
+            tokenizer,
         ),
         SimpleSentimentDataset(
-            validation_data["verse_text"], validation_data["label"], tokenizer
+            validation_data["verse_text"],
+            label_encoder.fit_transform(validation_data["label"]),
+            tokenizer,
         ),
-        SimpleSentimentDataset(test_data["verse_text"], test_data["label"], tokenizer),
+        SimpleSentimentDataset(
+            test_data["verse_text"],
+            label_encoder.fit_transform(test_data["label"]),
+            tokenizer,
+        ),
     )
 
 
@@ -64,13 +73,22 @@ def get_basic_tweet_sentiment_dataset(tokenizer, path=None):
         raw_dataset = load_dataset(path)
     else:
         raw_dataset = load_dataset("stanfordnlp/sentiment140")
+    label_encoder = LabelEncoder()
     train_data, test_data = (
         raw_dataset["train"],
         raw_dataset["test"],
     )
     return (
-        SimpleSentimentDataset(train_data["text"], train_data["sentiment"], tokenizer),
-        SimpleSentimentDataset(test_data["text"], test_data["sentiment"], tokenizer),
+        SimpleSentimentDataset(
+            train_data["text"],
+            label_encoder.fit_transform(train_data["sentiment"]),
+            tokenizer,
+        ),
+        SimpleSentimentDataset(
+            test_data["text"],
+            label_encoder.fit_transform(test_data["sentiment"]),
+            tokenizer,
+        ),
     )
 
 
@@ -101,13 +119,3 @@ def get_advanced_tweet_sentiment_dataset(tokenizer, path=None):
         means,
         stds,
     )
-
-
-if __name__ == "__main__":
-    train_dataset, test_dataset, means, stds = get_advanced_tweet_sentiment_dataset(
-        lambda x: len(x)
-    )
-    print(len(train_dataset))
-    print(len(test_dataset))
-    print("____________________________")
-    print(test_dataset[23])
