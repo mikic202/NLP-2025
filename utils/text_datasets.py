@@ -4,7 +4,7 @@ from datasets import load_dataset
 import kagglehub
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
-from data_processing.preprocessing import preprocess_advanced_tweet_sentiment_data
+from utils.preprocessing import preprocess_advanced_tweet_sentiment_data
 
 
 class SimpleSentimentDataset(Dataset):
