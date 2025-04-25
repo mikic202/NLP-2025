@@ -73,7 +73,6 @@ def get_basic_tweet_sentiment_dataset(tokenizer, path=None):
         raw_dataset = load_dataset(path)
     else:
         raw_dataset = load_dataset("stanfordnlp/sentiment140")
-    label_encoder = LabelEncoder()
     train_data, test_data = (
         raw_dataset["train"],
         raw_dataset["test"],
@@ -81,12 +80,12 @@ def get_basic_tweet_sentiment_dataset(tokenizer, path=None):
     return (
         SimpleSentimentDataset(
             train_data["text"],
-            label_encoder.fit_transform(train_data["sentiment"]),
+            train_data["sentiment"],
             tokenizer,
         ),
         SimpleSentimentDataset(
             test_data["text"],
-            label_encoder.fit_transform(test_data["sentiment"]),
+            test_data["sentiment"],
             tokenizer,
         ),
     )
