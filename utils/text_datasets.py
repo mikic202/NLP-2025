@@ -97,11 +97,13 @@ def get_advanced_tweet_sentiment_dataset(tokenizer, path=None):
     train_data, means, stds = preprocess_advanced_tweet_sentiment_data(
         pd.read_csv(path + "/train.csv", encoding="ISO-8859-1", engine="python")
     )
+    train_data["text"] = train_data["text"].fillna("")
     test_data, _, _ = preprocess_advanced_tweet_sentiment_data(
         pd.read_csv(path + "/test.csv", encoding="ISO-8859-1", engine="python"),
         means,
         stds,
     )
+    test_data["text"] = test_data["text"].fillna("")
     return (
         AdditionalDataSentimentDataset(
             train_data.drop(["sentiment", "selected_text", "textID"], axis=1),
