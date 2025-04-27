@@ -5,6 +5,7 @@ from sklearn.preprocessing import LabelEncoder
 def preprocess_advanced_tweet_sentiment_data(
     tweet_data: pd.DataFrame, means=None, stds=None
 ):
+    tweet_data.dropna(subset=["text", "sentiment"], inplace=True)
     label_encoder = LabelEncoder()
     tweet_data["sentiment"] = label_encoder.fit_transform(tweet_data["sentiment"])
     tweet_data["Time of Tweet"] = label_encoder.fit_transform(
