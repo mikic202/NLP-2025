@@ -21,5 +21,6 @@ def preprocess_advanced_tweet_sentiment_data(
         stds = tweet_data[numeric_columns].std()
 
     tweet_data[numeric_columns] = (tweet_data[numeric_columns] - means) / stds
+    tweet_data = tweet_data.reset_index(drop=True)
 
     return tweet_data, means, stds
