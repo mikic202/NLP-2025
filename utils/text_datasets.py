@@ -17,6 +17,8 @@ class SimpleSentimentDataset(Dataset):
         return len(self.text)
 
     def __getitem__(self, idx):
+        if self.tokinizer is None:
+            return self.text[idx], self.sentiment[idx]
         return torch.tensor(self.tokinizer(self.text[idx])), torch.tensor(
             self.sentiment[idx]
         )
@@ -33,6 +35,8 @@ class AdditionalDataSentimentDataset(Dataset):
         return len(self.data)
 
     def __getitem__(self, idx):
+        if self.tokenizer is None:
+            return data[self.text_id], self.sentiment[idx]
         data = self.data.iloc[idx]
         data[self.text_id] = torch.tensor(self.tokenizer(data[self.text_id]))
         return data, torch.tensor(self.sentiment[idx])
