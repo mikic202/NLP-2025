@@ -14,8 +14,11 @@ def preprocess_advanced_tweet_sentiment_data(
     tweet_data["Country"] = label_encoder.fit_transform(tweet_data["Country"])
     tweet_data["Age of User"] = label_encoder.fit_transform(tweet_data["Age of User"])
 
-    numeric_columns = ["Population -2020", "Land Area (Km²)", "Density (P/Km²)"]
+    tweet_data = pd.get_dummies(
+        tweet_data, columns=["Country", "Age of User", "Time of Tweet"]
+    )
 
+    numeric_columns = ["Population -2020", "Land Area (Km²)", "Density (P/Km²)"]
     if means is None or stds is None:
         means = tweet_data[numeric_columns].mean()
         stds = tweet_data[numeric_columns].std()
