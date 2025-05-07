@@ -36,7 +36,7 @@ class AdditionalDataSentimentDataset(Dataset):
 
     def __getitem__(self, idx):
         if self.tokenizer is None:
-            return data[self.text_id], self.sentiment[idx]
+            return self.data.iloc[idx], self.sentiment[idx]
         data = self.data.iloc[idx]
         data[self.text_id] = torch.tensor(self.tokenizer(data[self.text_id]))
         return data, torch.tensor(self.sentiment[idx])
