@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 def get_metrics(predictions, targets, rule_based=False):
     if rule_based:
         accuracy = sklearn.metrics.accuracy_score(targets, predictions)
-    else: 
+    else:
         accuracy = torch.sum(targets == predictions).item() / len(targets)
     return {
         "f1_score": sklearn.metrics.f1_score(targets, predictions, average="macro"),
@@ -19,24 +19,25 @@ def get_metrics(predictions, targets, rule_based=False):
     }
 
 
-def display_clasification_metrics(predictions, targets, labels=None, rule_based=False):
-    f1_score, accuracy, recall, conf_matrix = get_metrics(predictions, targets, rule_based).values()
-    if labels is not None:
+def display_clasification_metrics(
+    predictions, targets, labels=None, rule_based=False, ax=None
+):
+    f1_score, accuracy, recall, conf_matrix = get_metrics(
+        predictions, targets, rule_based
+    ).values()
+    if not labels:
         labels = np.unique(targets)
-
     print(f"F1 Score {f1_score}")
     print(f"Accuracy {accuracy}")
     print(f"Recall {recall}")
     if rule_based:
         cm = sklearn.metrics.confusion_matrix(targets, predictions)
-        disp = sklearn.metrics.ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
-        disp.plot(cmap='rocket')
-        # plt.show()
     else:
-        heatmap(
-            conf_matrix,
-            annot=True,
-            fmt="d",
-            xticklabels=labels,
-            yticklabels=labels,
-        )
+        cm = conf_matrix
+    disp = sklearn.metrics.ConfusionMatrixDisplay(
+        confusion_matrix=cm, display_labels=labels
+    )
+    disp.plot(
+        cmap="rocket",
+        ax=ax,
+    )
