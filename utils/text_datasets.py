@@ -76,7 +76,7 @@ def get_basic_tweet_sentiment_dataset(tokenizer, path=None):
     if path:
         raw_dataset = load_dataset(path)
     else:
-        raw_dataset = load_dataset("stanfordnlp/sentiment140")
+        raw_dataset = load_dataset("stanfordnlp/sentiment140", trust_remote_code=True)
     train_data, test_data = (
         raw_dataset["train"],
         raw_dataset["test"],
@@ -94,6 +94,31 @@ def get_basic_tweet_sentiment_dataset(tokenizer, path=None):
         ),
     )
 
+def get_advanced_tweet_sentiment_dataset_only_text(tokenizer, path=None):
+    if not path:
+        path = kagglehub.dataset_download("abhi8923shriv/sentiment-analysis-dataset")
+    train_data, means, stds = preprocess_advanced_tweet_sentiment_data(
+        pd.read_csv(path + "/train.csv", encoding="ISO-8859-1", engine="python")
+    )
+    train_data["text"] = train_data["text"].fillna("")
+    test_data, _, _ = preprocess_advanced_tweet_sentiment_data(
+        pd.read_csv(path + "/test.csv", encoding="ISO-8859-1", engine="python"),
+        means,
+        stds,
+    )
+    test_data["text"] = test_data["text"].fillna("")
+    return (
+        SimpleSentimentDataset(
+            list(train_data["text"]),
+            list(train_data["sentiment"]),
+            tokenizer,
+        ),
+        SimpleSentimentDataset(
+            list(test_data["text"]),
+            list(test_data["sentiment"]),
+            tokenizer,
+        ),
+    )
 
 def get_advanced_tweet_sentiment_dataset(tokenizer, path=None):
     if not path:
