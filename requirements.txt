@@ -303,3 +303,4 @@ wrapt==1.13.3
 xdg==5
 xkit==0.0.0
 zipp==1.0.0
+textblob==0.19.0
